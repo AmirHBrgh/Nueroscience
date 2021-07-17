@@ -26,9 +26,9 @@ SCRA = [];
 N = length(neuron_codes); % spike-count rate average
 for i = 1:N
    [outs{i} ,SCRA(i)] = Func_ReadData(char(neuron_codes(i)));
+   neurons(i) = struct("outs", outs{i},"spike_rate", SCRA(i));
 end
 %% Save Datas
-neurons = struct("outs", outs, "spike_rate", SCRA);
 save Data/neuron_codes.mat neuron_codes
 save Data/neurons_struct.mat neurons
 

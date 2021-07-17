@@ -8,6 +8,7 @@
 \usetikzlibrary{decorations.pathreplacing}
 \usepackage{relsize}
 \usepackage{color}
+\usepackage{ifthen}
 \usepackage[framed,numbered]{matlab-prettifier}
 \usepackage{files/persianheader}     
 \usepackage{float}
@@ -21,7 +22,7 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\rhead{\textbf{علوم اعصاب محاسباتی}}
+\rhead{\textbf{علوم اعصاب یادگیری}}
 \chead{\textbf{پروژه‌ی پایانی درس}}
 \lhead{\textbf{\nouppercase{\rightmark}}}
 \cfoot{({\thepage})}
@@ -238,6 +239,66 @@ indices = indices(indices>15);
 \lstinline[style=Matlab-editor, tabsize=2]{'random'}
 باشد مقدار \lr{events} در ورودی را به عنوان اندیس‌ها در نظر می‌گیرد و در غیر این صورت همان منطق قبلی را اجرا می‌کند.
 		 
+		 \newcounter{int}
+		 \setcounter{int}{1}
+		 \loop
+		 
+		 \begin{figure}[h]
+		 	\centering
+			\subfigure{\includegraphics[width=0.55\linewidth]{photos/STA/imshows/\theint.png}}
+			\hfill
+			\subfigure{\includegraphics[width=0.4\linewidth]{photos/STA/histograms/\theint.png}}
+		 \end{figure}
+		 
+		 
+		 \addtocounter{int}{1}\ifnum\value{int}<10
+		 \repeat
+		 
+		 \loop
+		 
+		 \begin{figure}[h]
+		 	\centering
+		 	\subfigure{\includegraphics[width=0.55\linewidth]{photos/STA/imshows/\theint.png}}
+		 	\hfill
+		 	\subfigure{\includegraphics[width=0.4\linewidth]{photos/STA/histograms/\theint.png}}
+		 \end{figure}
+		 
+		 
+		 \addtocounter{int}{1}\ifnum\value{int}<19
+		 \repeat
+		 
+		 		 
+		 \begin{figure}[h]
+		 	\centering
+		 	\subfigure{\includegraphics[width=0.55\linewidth]{photos/STA/imshows/\theint.png}}
+		 	\hfill
+		 	\subfigure{\includegraphics[width=0.4\linewidth]{photos/STA/histograms/\theint.png}}
+		 \end{figure}
+		 
+		 
+		 \addtocounter{int}{1}\ifnum\value{int}<28
+		 \repeat
+		 
+		 \begin{figure}[h]
+		 	\centering
+		 	\subfigure{\includegraphics[width=0.55\linewidth]{photos/STA/imshows/\theint.png}}
+		 	\hfill
+		 	\subfigure{\includegraphics[width=0.4\linewidth]{photos/STA/histograms/\theint.png}}
+		 \end{figure}
+		 
+		 
+		 \addtocounter{int}{1}\ifnum\value{int}<38
+		 \repeat
 
+				 \begin{figure}[h]
+			\centering
+			\subfigure{\includegraphics[width=0.55\linewidth]{photos/STA/imshows/\theint.png}}
+			\hfill
+			\subfigure{\includegraphics[width=0.4\linewidth]{photos/STA/histograms/\theint.png}}
+		\end{figure}
+		
+		
+		\addtocounter{int}{1}\ifnum\value{int}<55
+		\repeat
 		
 \end{document}

@@ -15,7 +15,7 @@ function Output = Func_StimuliExtraction(events, option, msq1D)
         indices = events;
     else
     indices = ceil((events * frame_rate) / 10000);
-    indices = indices(indices>15);
+    indices = indices(indices>15 & indices<32767);
     end
     Output = zeros(16, 16, length(indices));
     for i = 1:length(indices)
