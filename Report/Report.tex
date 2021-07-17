@@ -8,6 +8,7 @@
 \usetikzlibrary{decorations.pathreplacing}
 \usepackage{relsize}
 \usepackage{color}
+\usepackage[framed,numbered]{matlab-prettifier}
 \usepackage{files/persianheader}     
 \usepackage{float}
 \usepackage{enumerate}
@@ -28,7 +29,7 @@
 \renewcommand{\footrulewidth}{1pt}
 \renewcommand{\sectionmark}[1]{\markright{#1}}
 \renewcommand{\subsectionmark}[1]{\markright{#1}}
-
+\newcommand{\pf}[1]{$\mathtt{#1}$}
 \onehalfspacing
 \begin{document}
 	\relscale{1}
@@ -94,5 +95,149 @@ $\pm 5.2 SD$
 بازه‌ی اطمینان ما با $p< 10^{-4}$ خواهد بود. و بنابراین اگر مقدارویژه‌ای خارج از این بازه‌ی اطمینان باشد؛ آن مقدارویژه و بردارویژه دارای تفاوت آشکار خواهند بود.(در واقع آن بردار ویژه راستاییست که تحریک‌های موجب اسپایک در آن واریانس و در نتیجه‌ توزیع احتمال کاملا متفاوتی با توزیع اولیه دارند)
 \subsection{نتایج پژوهش}
 همانطور که در بخش‌های قبل اشاره کردیم هدف پیدا کردن \lr{eigenvalue}هایی بود که خارج از بازه‌ی اطمینان باشند که آن‌ها به عنوان ویژگی‌های اصلی موجود در \lr{receptive-field} گزارش شود.نتایج مقاله نشان می‌دهد که برای تعداد زیادی از سلول‌های پیچیده دو بردارویژه پیدا شده‌است که این بردار ویژه‌ها ناحیه‌ی \lr{ON-OFF}  مشخص و مجزا ازهمی دارند و همچنین \lr{correlation} بسیار پایینی دارند.همچنین می‌بینیم که این راستا‌ها به خوبی سبب تحریک نورون‌ها می‌شوند با این حال برای \lr{eigenvalue}هایی که در بازه‌ی اطمینان مذکور قرار دارند تاثیر بسیار کمتری در تحریک نورون‌ها مشاهده شده است.
-	
+
+\pagebreak
+
+\section{آشنایی با دیتاست}
+
+\subsection{بخش اول}
+با استفاده از تابع تعبیه شده‌ی
+	\pf{fget\_hdr.m}
+ یکی از فایل‌های \pf{.sa0} را باز می‌کنیم و به محتویات آن توجه می‌کنیم.
+ 
+	\begin{figure}[h]
+		\centering
+		\includegraphics[trim=0.2cm 1cm 0 0.2cm ,clip=true, width=0.8\linewidth]{photos/hdr.png}
+		\caption{محتویات فایل \pf{hdr}}
+	\end{figure}
+
+می‌توانیم ببینیم که در این فایل اطلاعاتی اطلاعاتی مربوط به خود فایل از جمله‌ زمان ایجاد دیتاست و سازنده‌ی آن و همچنین اطلاعاتی در مورد داده‌ها از جمله نرخ نمونه‌‌گیری وجود دارد.
+همچنین در فایل 
+\pf{.log} نیز اطلاعاتی مربوط به نورونی که از آن نمونه‌گیری می‌شود وجود دارد.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|c|c|}
+		\hline
+		نوع اطلاعات            & برخی از اطلاعات موجود                                \\ \hline
+		اطلاعات مربوط به فایل  & زمان ایجاد فایل، سازنده‌ی فایل، ورژن فایل            \\ \hline
+		اطلاعات مربوط به تحریک & نوع تحریک، نرخ‌ بروزرسانی مانیتور، نرخ تغییر فریم‌ها \\ \hline
+		اطلاعات مربوط به \lr{tuning curve} & زاویه‌‌ی ترجیحی نورون، طول و عرض ترجیحی نورون \\ 
+		\hline
+				اطلاعات مربوط به نمونه‌‌گیری  & نرخ نمونه‌‌گیری، نوع  کارگذاری الکترود‌ها،  تعداد چنل‌ها         \\ \hline
+	\end{tabular}
+\end{table}
+
+و اطلاعات دیگری از این دست می‌باشد.
+
+\subsection{بخش دوم}
+تابع \pf{Func\_ReadData} را به صورتی که خواسته شده پیاده‌سازی می‌کنیم. ایده‌ی کلی در پیاده‌سازی این تابع این بود که ابتدا با استفاده از تابع \pf{dir} فایل‌های موجود در دایرکتوری نورون مورد نظر را می‌خوانیم و فایل‌های با
+\pf{mds1d.sa0}
+را پیدا می‌کنیم و اطلاعات آن را با استفاده از 
+		\pf{fget\_spk.m}
+		می‌خوانیم.
+		
+		همچنین با توجه به اینکه در بخش بعد به \lr{Spike-count rate} احتیاج پیدا می‌کنیم یکی از خروجی‌های \lr{Optional} را برابر با آن تعریف می‌کنیم، برای محاسبه‌ی این مقدار نیز تنها کافیست توجه کنیم که:
+		
+		$$ \langle r \rangle = \langle \frac{\#spikes}{time} \rangle_{trials}$$
+		
+		 نهایتا تابع مورد نظر به صورت زیر خواهد بود:
+		
+
+
+\begin{code}{تابع \pf{Func\_ReadData}}
+	\begin{latin}
+		\begin{lstlisting}[style=Matlab-editor, tabsize=2]
+% Recomend: select Data/ and MatlabFucntions/
+% directories and add them to matlab PATH
+function [Output, spike_count_rate] = Func_ReadData(NeuronCode)
+	Path = [pwd, '/Data', '/Spike_and_Log_Files/', NeuronCode];
+	Listing = dir(Path);
+	Index_Counter = 0;
+	events = {};
+	hdrs = {};
+	frame_rate = 59.72; %Hz
+	frame_number = 32767;
+	spike_count = [];
+	for i = 1:length(Listing)
+		if (contains(Listing(i).name, 'msq1d.sa0', 'IgnoreCase', true) && ...
+			~contains(Listing(i).name, 'sa0.sub', 'IgnoreCase', true) && ...
+			~contains(Listing(i).name, 'sa0.', 'IgnoreCase', true))
+			Index_Counter = Index_Counter + 1;
+			[events{Index_Counter}, hdrs{Index_Counter}] = fget_spk(Listing(i).name, 'get');
+			spike_count(Index_Counter) = length(events{Index_Counter});
+		end
+	end
+	Output = struct('events', events, 'hdr', hdrs);
+	spike_count_rate = mean(spike_count) * frame_rate/frame_number;
+end
+		\end{lstlisting}
+	\end{latin}
+\end{code}
+
+\subsection{بخش سوم}
+در این بخش ابتدا با استفاده از تابع \pf{dir} در پوشه‌ی مربوط به اطلاعات اسپایک‌ها نام تمام نورون‌ها را استخراج می‌کنیم. سپس با پیمایش بر روی‌ آن‌ها و با استفاده از تابعی که در بخش قبل نوشتیم نرخ اسپایک هر نورون را نگهداری می‌کنیم. نهایتا هیستوگرام نرخ‌ اسپایک‌ها به صورت زیر خواهد بود:
+
+	\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\linewidth]{photos/fr-histogram.png}
+	\caption{هیستوگرام نرخ اسپایک‌های نورون‌ها}
+\end{figure}
+
+سپس به سادگی می‌توانیم نورون‌هایی که نرخ اسپایک کمتر از ۲ دارند را با استفاده از قطعه کد زیر از لیست اولیه‌ای که برای کد نورون‌ها تهیه کردیم حذف کنیم.
+
+\begin{code}{حذف نورون‌ها با نرخ اسپایک پایین}
+	\begin{latin}
+		\begin{lstlisting}[style=Matlab-editor, tabsize=2]
+index_counter = 0;
+for i = 1:61
+	if SCRA(i) < 2
+		index_counter = index_counter + 1;
+		index(index_counter) = i;
+	end
+end
+fprintf('Exluded Neurons:\n')
+disp(neuron_codes(index)')
+neuron_codes(index) = [];
+		\end{lstlisting}
+	\end{latin}
+\end{code}
+
+
+خروجی این قطعه کد شماره‌ی نورون‌های حذف شده را نمایش می‌دهد که به صورت زیر است:
+\begin{latin}
+	\begin{lstlisting}[basicstyle=\small, frame = single]
+Exluded Neurons:
+"000413.b03"
+"000413.b04"
+"000413.b05"
+"000418.a01"
+"000420.b02"
+"000524.c01"
+"000907.f07"
+	\end{lstlisting}
+\end{latin}
+
+\subsection{بخش چهارم}
+		در این قسمت تابع \pf{Func\_StimuliExtraction} به گونه‌ای پیاده می‌کنیم که با دریافت دنباله‌ای از زمان اسپایک‌ها تحریک‌هایی با ابعاد 16*16 که سبب این اسپایک‌ها شدند را خروجی بدهد. برای اینکار باید توجه کنیم که با توجه به متن مقاله نرخ تغییر فریم‌های $60Hz$ و به طور دقیق با توجه به فایل‌های لاگ
+		 $59.7213Hz$
+		 می‌باشد. همچنین از آنجایی که نرخ نمونه برداری $0.1ms$ می‌باشد می‌توان دید که با استفاده از کد زیر می‌تواند اندیس‌هایی از فریم‌ها که در آن‌ها اسپایک رخ‌ داده است را ببینیم.(از آنجایی که تمایل داریم ابعاد ماتریس ۱۶*۱۶ باشد اندیس‌های کمتر از ۱۶ را نادیده در نظر می‌گیریم)
+
+\begin{code}{یافتن اندیس‌های زمان اسپایک و نادیده گرفتن اندیس‌های کمتر ۱۵}
+	\begin{latin}
+		\begin{lstlisting}[style=Matlab-editor, tabsize=2]
+indices = ceil((events * frame_rate) / 10000);
+indices = indices(indices>15);
+		\end{lstlisting}
+	\end{latin}
+\end{code}
+ 
+سپس می‌توانیم ماتریس‌های ۱۶*۱۶ که سبب اسپایک شدند را تشکیل دهیم.
+
+برای راحت‌تر شدن کار در مراحل بعد اولا ورودی دوم ذکر شده در صورت سوال یعنی \lr{msq1D} را اختیاری در نظر گرفتیم که مقدار دیفالت آن همان فایلی خواهد بود که در پوشه‌ی \lr{Data} قرار دارد. همچنین در مراحل بعد از آنجایی که می‌خواهیم دنباله‌ای تصادفی از اسپایک‌ها تولید کنیم راحت‌تر خواهد بود که فقط اندیس‌ها را به عنوان ورودی به این تابع بدهیم به این منظور یک ورودی \lr{option} تعریف کردیم که اگر مقدار آن 
+\lstinline[style=Matlab-editor, tabsize=2]{'random'}
+باشد مقدار \lr{events} در ورودی را به عنوان اندیس‌ها در نظر می‌گیرد و در غیر این صورت همان منطق قبلی را اجرا می‌کند.
+		 
+
+		
 \end{document}

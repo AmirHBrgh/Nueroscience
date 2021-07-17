@@ -1,5 +1,5 @@
 % Recomend: select Data/ and MatlabFucntions/
-% directorys and add them to matlab PATH
+% directories and add them to matlab PATH
 function [Output, spike_count_rate] = Func_ReadData(NeuronCode)
     Path = [pwd, '/Data', '/Spike_and_Log_Files/', NeuronCode];
     Listing = dir(Path);
