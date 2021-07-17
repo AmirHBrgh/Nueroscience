@@ -2,7 +2,7 @@
 n = 10;           %neurons number in struct "neuron"
 load('Data\Stimulus_Files\msq1D.mat')
 % Spike triggered ensemble
-Spike_trig_stimuli = Func_StimuliExtraction ([neurons(n).outs(1).events],"real",msq1D);
+Spike_trig_stimuli = Func_StimuliExtraction (neurons(n).outs(1).events);
 Spike_trig_stimuli = reshape(Spike_trig_stimuli,256,length(Spike_trig_stimuli));
 % correlation matrix calculation
 correlation_mat = corr(Spike_trig_stimuli');
@@ -38,7 +38,7 @@ freq = 59.721395;
 eig_val = zeros(k,256);
 for i = 1 : k
     random_events = 10000*rand(1,(length(Spike_trig_stimuli)))*(32767/freq);
-    random_spike = Func_StimuliExtraction (random_events,"random",msq1D);
+    random_spike = Func_StimuliExtraction (random_events);
     random_spike = reshape(random_spike, 256, length(random_spike));
     random_correlation_mat = corr(random_spike');
     [~, random_d] = eig(random_correlation_mat);
