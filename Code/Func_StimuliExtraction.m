@@ -2,6 +2,7 @@ function Output = Func_StimuliExtraction(events, option, msq1D)
 %FUNC_STIMULIEXTRACTION spike-triggerd stimuli extracion 
 %   inputs: events = spike times in 0.1ms
 %   (optional): msq1D = stimuli matrix, defalut = Data/Stimulus_Files/msq1D.mat
+%   (optional):
     if nargin < 3
         x = load('Data/Stimulus_Files/msq1D.mat');
         msq1D = x.msq1D;
@@ -9,8 +10,6 @@ function Output = Func_StimuliExtraction(events, option, msq1D)
     if nargin < 2
         option = "real";
     end
-    %rep = (msq1D == -1);
-    %msq1D(rep) = 0;
     frame_rate = 59.7213;
     if option == "random"
         indices = events;

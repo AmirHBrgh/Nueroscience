@@ -6,7 +6,7 @@ neuron_codes(62) = [];
 %% Part3: spike-count rate histogram
 SCRA = zeros(1, 61); % spike-count rate average
 for i = 1:61
-   [~, SCRA(i)] = Func_ReadData(char(neuron_codes(i)));
+   [~ ,SCRA(i)] = Func_ReadData(char(neuron_codes(i)));
 end
 histogram(SCRA,15)
 title('spike-count-rate histogram', 'Interpreter', 'latex')
@@ -21,5 +21,14 @@ end
 fprintf('Exluded Neurons:\n')
 disp(neuron_codes(index)')
 neuron_codes(index) = [];
+%% Create Struct
+SCRA = [];
+N = length(neuron_codes); % spike-count rate average
+for i = 1:N
+   [outs{i} ,SCRA(i)] = Func_ReadData(char(neuron_codes(i)));
+end
 %% Save Datas
+neurons = struct("outs", outs, "spike_rate", SCRA);
 save Data/neuron_codes.mat neuron_codes
+save Data/neurons_struct.mat neurons
+

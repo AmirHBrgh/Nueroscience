@@ -41,9 +41,9 @@ end
 corr_stc = corr_stc / 256;
 %%
 close
-histogram(correlation_spike_trigerred, 'Normalization', 'probability')
+histogram(correlation_spike_trigerred)
 hold on
-histogram(corr_stc, 'Normalization', 'probability') 
+histogram(corr_stc) 
 legend('spike', 'control')
 %%
 [h, p] = ttest2(reshape(correlation_spike_trigerred, [1, 12845]),...
