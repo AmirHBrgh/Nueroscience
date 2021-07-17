@@ -1,26 +1,12 @@
-%% load neuron codes
+%% load neurons 
 clc, clear
-load Data/neuron_codes.mat 
+load Data/neurons_struct.mat
 %%
-[events, ~] = Func_ReadData(char(neuron_codes(10)));
-spike_trigerred_matrices = [];
-for i = 1:length(events)
-    spike_trigerred_trial = Func_StimuliExtraction(events(i).events);
-    spike_trigerred_matrices = cat(3, spike_trigerred_matrices, spike_trigerred_trial);
-end
-N = length(spike_trigerred_matrices);
-sta = (sum(spike_trigerred_matrices, 3)/ N);
+neuron = neurons(10);
+[sta, spike_trigerred] = Func_FindSTA(neuron);
 %%
-sta_show = sta + 0.5;
-imshow(sta_show,  'InitialMagnification', 800) 
-%%
-sta_show = 10 * (sta - mean(sta, [1 2])); 
-sta_show = sta_show + 0.5;
-imshow(sta_show,  'InitialMagnification', 800) 
-%%
-[h, p] = ttest(permute(spike_trigerred_matrices,[3 1 2]));
-p = 1 - p;
-imshow(reshape(p, [16, 16]),  'InitialMagnification', 800);
+neuron_code = neuron.outs(1).hdr.DataInfo.DataFrom(1:10);
+Func_FrameShow(sta, reshape(p, [16, 16]), sprintf('%s', neuron_code));
 %%
 sample = randi([16 32767], 1, N);
 spike_trigerred_control = Func_StimuliExtraction(sample, "random");
