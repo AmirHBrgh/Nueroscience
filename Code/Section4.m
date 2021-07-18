@@ -31,7 +31,7 @@ imshow(v3,[-0.1,0.1]);
 title([neurons(n).outs(1).hdr.FileInfo.Fname,'-v3']);
 xlabel('$Spatial$','interpreter','latex');
 ylabel('$Temporal$','interpreter','latex');
-
+save v.mat
 %% 4.2
 k = 20;
 freq = 59.721395;

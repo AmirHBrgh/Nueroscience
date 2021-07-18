@@ -19,12 +19,12 @@ for i = 1:length(neurons)
     zeta_sta = reshape(sta,1,256)*spike_trigerred;
     random_zeta_sta = reshape(sta,1,256)*random_spike;
     
-    sta_result(i) = vartest2(zeta, random_zeta, 'Tail', 'right');
+    sta_result(i) = vartest2(zeta_sta, random_zeta_sta, 'Tail', 'right');
     
-    zeta_sta = reshape(v1,1,256)*spike_trigerred;
-    random_zeta_sta = reshape(v1,1,256)*random_spike;
+    zeta_stc = reshape(v(:,i),1,256)*spike_trigerred;
+    random_zeta_stc = reshape(v(:,i),1,256)*random_spike;
     
-    stc_result(i) = vartest2(zeta, random_zeta, 'Tail', 'right');
+    stc_result(i) = vartest2(zeta_stc, random_zeta_stc, 'Tail', 'right');
 end
 %%
 zeta4 = reshape(sta,1,256)*spike_trigerred;
