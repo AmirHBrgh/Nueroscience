@@ -1,7 +1,7 @@
 %% 4.1
 n = 10;           %neurons number in struct "neuron"
-load('Data\Stimulus_Files\msq1D.mat')
-load('Data\neurons_struct.mat')
+load('Data/Stimulus_Files/msq1D.mat')
+load('Data/neurons_struct.mat')
 % Spike triggered ensemble
 Spike_trig_stimuli = Func_StimuliExtraction (neurons(n).outs(1).events);
 Spike_trig_stimuli = reshape(Spike_trig_stimuli,256,length(Spike_trig_stimuli));
@@ -127,7 +127,7 @@ for n = 1 : 54
         axis off
         
         % 4.1
-        load('Data\Stimulus_Files\msq1D.mat')
+        load('Data/Stimulus_Files/msq1D.mat')
         % Spike triggered ensemble
         Spike_trig_stimuli = Func_StimuliExtraction (neurons(n).outs(1).events);
         Spike_trig_stimuli = reshape(Spike_trig_stimuli,256,length(Spike_trig_stimuli));

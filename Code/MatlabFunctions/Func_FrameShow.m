@@ -1,4 +1,4 @@
-function Func_FrameShow(frame, p, str)
+function Func_FrameShow(frame, p)
 %   Image show a frame with options
     figure;
     subplot(1,3,1)
