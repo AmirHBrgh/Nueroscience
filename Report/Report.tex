@@ -36,7 +36,7 @@
 	\relscale{1}
 	\neurotitlepage
 
-\section{مقدمه}
+\section*{مقدمه}
 
 توضیحات کلی در مورد کدها و پروژه و مقاله.
 
@@ -179,10 +179,11 @@ end
 \subsection{بخش سوم}
 در این بخش ابتدا با استفاده از تابع \pf{dir} در پوشه‌ی مربوط به اطلاعات اسپایک‌ها نام تمام نورون‌ها را استخراج می‌کنیم. سپس با پیمایش بر روی‌ آن‌ها و با استفاده از تابعی که در بخش قبل نوشتیم نرخ اسپایک هر نورون را نگهداری می‌کنیم. نهایتا هیستوگرام نرخ‌ اسپایک‌ها به صورت زیر خواهد بود:
 
-	\begin{figure}[h]
+\begin{figure}[h]
 	\centering
 	\includegraphics[width=0.6\linewidth]{photos/fr-histogram.png}
 	\caption{هیستوگرام نرخ اسپایک‌های نورون‌ها}
+	\label{2}
 \end{figure}
 
 سپس به سادگی می‌توانیم نورون‌هایی که نرخ اسپایک کمتر از ۲ دارند را با استفاده از قطعه کد زیر از لیست اولیه‌ای که برای کد نورون‌ها تهیه کردیم حذف کنیم.
@@ -239,20 +240,134 @@ indices = indices(indices>15);
 \lstinline[style=Matlab-editor, tabsize=2]{'random'}
 باشد مقدار \lr{events} در ورودی را به عنوان اندیس‌ها در نظر می‌گیرد و در غیر این صورت همان منطق قبلی را اجرا می‌کند.
 		 
+\pagebreak
+
+\section{بررسی با روش کلاسیک \lr{STA}}
+
+در کد نهایی که برای این بخش ارائه شده‌ است بر روی تمام ۵۴ نورونی که در بخش قبل حذف نشده‌اند عملیات‌ها صورت می‌گیرد. و حاصل تنها ذخیره می‌شود و تصاویر نمودار‌ها \lr{export} می‌شوند.(بگم دست نزنه یا نگم؟) 
+
+\subsection{بخش اول}
+برای محاسبه‌ی این بخش تابع \pf{Func\_FindSTA} پیاده سازی شده است که نحوه‌ی عملکرد آن به صورت زیر است.
+
+\begin{code}{تابع محاسبه‌ی \lr{STA}}
+	\begin{latin}
+		\begin{lstlisting}[style=Matlab-editor, tabsize=2]
+function [sta, spike_trigerred] = Func_FindSTA(neuron)
+	outs = neuron.outs;
+	spike_trigerred = [];
+	for i = 1:length(outs)
+		spike_trigerred_trial = Func_StimuliExtraction(outs(i).events);
+		spike_trigerred = cat(3, spike_trigerred, spike_trigerred_trial);
+	end
+	N = length(spike_trigerred);
+	sta = (sum(spike_trigerred, 3)/ N);
+end		\end{lstlisting}
+	\end{latin}
+\end{code}
+
+که می‌توان دید بنابر تعریف \lr{STA} پیاده‌سازی شده است. این تابع تمام مقادیر 
+\lstinline[style=Matlab-editor, tabsize=2]{spike_trigerred}
+را نیز خروجی می‌دهد چرا که در مراحل بعد به آن نیاز خواهیم داشت. برای همان مثالی که در صورت پروژه آمده است خروجی زیر را می‌گیریم:
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{photos/sta.png}
+	\caption{خروجی برای نورون \lr{000601.c05}}
+\end{figure}
+
+\subsection{بخش دوم}
+خروجی این بخش در بخش اول نمایش داده‌ شد با این حال ذکر می‌کنیم که برای محاسبه‌ی \lr{p-value} به دست آمده از \lr{t-test} از تابع آماده  \pf{ttest}
+در متلب استفاده کردیم.
+\begin{code}{محاسبه‌ی \lr{t-test}}
+	\begin{latin}
+		\begin{lstlisting}[style=Matlab-editor, tabsize=2]
+[~, p] = ttest(permute(spike_trigerred,[3 1 2]));
+	\end{lstlisting}
+	\end{latin}
+\end{code}
+
+\subsection{بخش سوم}
+برای محاسبه‌ی \lr{correlation} از آنجایی که یکی از ماتریس‌هایی که در اختیار ماست ۳بعدی است محاسبه‌ی \lr{correlation} را به صورت دستی انجام دادیم و تابع 
+\pf{Func\_Correlation}
+را پیاده‌سازی کردیم، که اساس کار آن ضرب درایه به درایه موجود در متلب می‌باشد. همچنین برای تولید دنباله‌ی تصادفی از اسپایک‌ها یا همان ماتریس کنترل به صورت زیر عمل کردیم و در اینجا اضافه کردن پارامتر ورودی اضافه به تابع کارمان را ساده‌تر می‌کند. و تنها کافیست دنباله‌ای تصادفی از شماره‌ی فریم‌ها ایجاد کنیم.
+\begin{code}{ایجاد دنباله‌ی تصادفی از تحریک‌ها}
+	\begin{latin}
+		\begin{lstlisting}[style=Matlab-editor, tabsize=2]
+spike_sample = randi([16 32767], 1, N);
+stim_control = Func_StimuliExtraction(spike_sample, 'random');
+		\end{lstlisting}
+	\end{latin}
+\end{code}
+خروجی هریک از ماتریس‌های کنترل و \lr{spike-triggered} در فضای جدید برای این نورون به صورت زیر است.
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.46\linewidth]{photos/sta-kernel-hist.png}
+	\caption{
+		هیستوگرام \lr{correlation} ماتریس‌های کنترل و \lr{spike-triggered} با \lr{STA}
+	}
+\label{1}
+\end{figure}
+
+\subsection{بخش چهارم}
+برای محاسبه‌ی \lr{p-value} در اینجا نیز از تابع آماده \pf{ttest2} موجود در متلب استفاده می‌کنیم. خروجی آن به صورت زیر است.
+
+\begin{latin}
+	\begin{lstlisting}[basicstyle=\small, frame = single]
+p-value = 0.000000, null-hypothesis rejected, means are diffrent.
+	\end{lstlisting}
+\end{latin}
+نتیجه‌ی آزمون \lr{t-test} این است که توزیع‌ $p(s|r)$ و $p(s)$ در فضای مربوط به \lr{STA} دارای میانگین‌های متفاوتی می‌باشند. با این حال با توجه به \autoref{1} برایمان روشن است که این دو توزیع علارغم اینکه میانگین‌های متفاوتی دارند اما به دلیل اینکه‌ سطح مشترک زیر نمودار آنها بسیار زیاد است نمی‌توان تفاوت معناداری بین آنها قائل شد.
+
+به عبارت دیگر نتیجه‌ی آزمون می‌گوید که توزیع‌ $p(s|r)$ و $p(s)$ تفاوت میانگین قابل توجهی دارند که این بر خلاف انتظار ما نمی‌باشد چرا که $p(s|r)$ از تصویر بردارهای منجر به اسپایک بر روی \lr{STA} حاصل می‌شود که واضح است که باید میانگین مثبتی داشته باشد و از طرفی روشن است که با انتخاب تحریک‌های رندم و تصویر کردن روی \lr{STA} میانگینی نزدیک به صفر خواهیم داشت.
+
+با این حال همانطور که از شکل مشخص است تفاوت معنادار در \textbf{میانگین} نمی‌تواند تفاوت معنادار در \textbf{توزیع‌ها} را نشان بدهد و همانطور که از متن مقاله به یاد داریم در آنالیزهایی که بر پایه‌ی \lr{correlation} طراحی می‌شوند تغییر در توزیع‌ها را با تغییر در گشتاور درجه‌ی دوم آنها یا همان واریانس می‌سنجیم.
+
+\subsection{بخش پنجم}
+به طور کلی میدانیم که خطای تخمین ما از رابطه‌ی زیر محاسبه می‌شود:
+$$ P(\text{Error}) = P(\text{Error}|s=1)P(r=1) + P(\text{Error}|r=0)P(r=0) $$
+
+از طرفی می‌دانیم که با توجه به اینکه تحریک‌های اولیه‌ کاملا تصادفی بودند  $P(s=1)$ همان نرخ اسپایک زدن هر نورون در همین آزمایش می‌باشد. ما قبلا نرخ \lr{spike-count rate} را محاسبه کرده بودیم و از توضیحات درس به یاد داریم که:
+$$ P(r=1) = \dfrac{\langle count \rangle}{\Delta t} $$ 
+که در اینجا $\Delta t$ همان نرخ تغییر فریم‌ها می‌باشد. حال با توجه به نوع تخمینمان که تنها به یک پارامتر $\theta$ وابسته می‌باشد مقدار خطا را باز نویسی می‌کنیم:
+
+$$ P(\text{Error}) = P(X > \theta | r = 0)P(r = 0) + P(X < \theta | r = 1)P(r = 1) $$
+
+توزیع $P(X|r=1)$ همان توزیع تصویر \lr{spike-triggered } ها بر روی \lr{STA} می‌باشد که طبق فرض مسئله آن را نرمال در نظر می‌گیریم. از طرف دیگر با توجه به \lr{sparse} بودن نورون‌ها و احتمال پایین اسپایک زدن آنها(برای اکثر نورون‌ها با توجه به \autoref{2} در حدود $10^{-2}$ می‌باشند) می‌توانیم توزیعی که برای تصویر \lr{control} محاسبه کردیم را توزیع $P(X|r=0)$ در نظر بگیریم و بنابراین می‌توانیم $P(\text{Error})$ را محاسبه کنیم و مشتق آن نسبت $\theta$ را برابر با صفر قرار دهیم تا بهترین ترشهولد را محاسبه کنیم.
+
+برای محاسبه این مقادیر در متلب ابتدا یک فیت گاوسی بر روی هیستوگرام‌ها ایجاد می‌کنیم و سپس $\mu$ و $\sigma$ را محاسبه می‌کنیم و آن‌ها را به همراه احتمال اسپایک زدن نورون به تابع نوشته شده‌ی
+ \pf{Func\_Accuracy} می‌دهیم که ترشهولد و دقت تخمین ما را بیان می‌کند.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\linewidth]{photos/sta-fit-gaussian.png}
+	\caption{
+هیستوگرام‌ها به همراه فیت گوسی آن‌ها
+	}
+	\label{1}
+\end{figure}
+
+همچنین توجه می‌کنیم که برای محاسبه‌ی 
+\pf{Func\_Accuracy}
+از سایت‌های محاسبه کننده استفاده کردیم و خروجی آنها را در تابع متلب قرار دادیم.
+ 
+\pagebreak
+		 
+		 \subsection{بخش ششم}
+		 با اجرای مراحل بالا برای تمامی ۵۴ نورون باقی مانده به خروجی‌های زیر دست پیدا می‌کنیم لازم است توجه کنیم که داده‌های کنترل به صورت رندم تولید می‌شوند و بنابراین با اجرای این کدها ممکن است نتایج اندکی متفاوت بگیریم هر چند در کلیت پاسخ تاثیری نخواهند داشت.
+	
 		 \newcounter{int}
 		 \setcounter{int}{1}
 		 \loop
 		 
-		 \begin{figure}[h]
+		 \begin{figure}[ht]
 		 	\centering
 			\subfigure{\includegraphics[width=0.55\linewidth]{photos/STA/imshows/\theint.png}}
 			\hfill
 			\subfigure{\includegraphics[width=0.4\linewidth]{photos/STA/histograms/\theint.png}}
 		 \end{figure}
 		 
-		 
 		 \addtocounter{int}{1}\ifnum\value{int}<10
 		 \repeat
+		 
 		 
 		 \loop
 		 
@@ -264,41 +379,35 @@ indices = indices(indices>15);
 		 \end{figure}
 		 
 		 
-		 \addtocounter{int}{1}\ifnum\value{int}<19
+		 \addtocounter{int}{1}\ifnum\value{int}<18
 		 \repeat
 		 
-		 		 
-		 \begin{figure}[h]
-		 	\centering
-		 	\subfigure{\includegraphics[width=0.55\linewidth]{photos/STA/imshows/\theint.png}}
-		 	\hfill
-		 	\subfigure{\includegraphics[width=0.4\linewidth]{photos/STA/histograms/\theint.png}}
-		 \end{figure}
+		 \clearpage
 		 
+		 \loop
 		 
-		 \addtocounter{int}{1}\ifnum\value{int}<28
-		 \repeat
 		 
 		 \begin{figure}[h]
 		 	\centering
 		 	\subfigure{\includegraphics[width=0.55\linewidth]{photos/STA/imshows/\theint.png}}
 		 	\hfill
 		 	\subfigure{\includegraphics[width=0.4\linewidth]{photos/STA/histograms/\theint.png}}
-		 \end{figure}
-		 
-		 
-		 \addtocounter{int}{1}\ifnum\value{int}<38
-		 \repeat
+		 \end{figure}	 	     
 
-				 \begin{figure}[h]
-			\centering
-			\subfigure{\includegraphics[width=0.55\linewidth]{photos/STA/imshows/\theint.png}}
-			\hfill
-			\subfigure{\includegraphics[width=0.4\linewidth]{photos/STA/histograms/\theint.png}}
-		\end{figure}
+		 
+		 \addtocounter{int}{1}\ifnum\value{int}<55
+		 \repeat 
+		 
+		 
+		 \clearpage
+		 
+		\subsection{بخش هفتم}
+	با اینکه میانگین توزیع‌ها با توجه به تست‌های آماری با هم تفاوت دارند از آنجایی که تقریبا تمامی نمودار‌های رسم شده نشان می‌دهند که توزیع تصویر تحریک‌ها بر راستای \lr{STA} برای کلیه تحریک‌ها و تحریک‌هایی که موجب اسپایک شدند تفاوت چشمگیری با هم ندارند و به درستی نمی‌توان ترشهولدی پیدا کرد که با انتخاب آن داده‌ها را با دقت خوبی بتوان دسته‌بندی کرد.از طرف دیگر مولفه‌ی \lr{STA} در بیشتر نورون‌ها الگوی‌ معناداری ندارد و بیشتر شبیه نویز‌ می‌باشد.به عبارتی تا حد خیلی زیادی می‌توان به اعای مقاله مبنی بر پیچیدگی نور‌ون‌هایی که با آنها سروکار داریم استناد کرد.
+	
+	با این وجود می‌توان دید که برخی از نورون‌های جدولی که در بالا ارائه کردیم نه تنها پترنی با الگوی معنادار دارند بلکه نمودار توزیع آن‌ها به علت تفاوت \textbf{میانگین} که باهم دارند را به خوبی می‌توان تفکیک کرد از بین این‌ها اطلاعات 
 		
-		
-		\addtocounter{int}{1}\ifnum\value{int}<55
-		\repeat
+		 
+		 
+		 
 		
 \end{document}

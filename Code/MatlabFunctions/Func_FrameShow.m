@@ -24,7 +24,7 @@ function Func_FrameShow(frame, p, str)
     x0=10;
     y0=10;
     width=500;
-    height=450;
+    height=430;
     set(gcf,'position',[x0,y0,width,height])
 end
 

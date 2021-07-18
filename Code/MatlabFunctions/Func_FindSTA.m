@@ -6,5 +6,5 @@ function [sta, spike_trigerred] = Func_FindSTA(neuron)
         spike_trigerred = cat(3, spike_trigerred, spike_trigerred_trial);
     end
     N = length(spike_trigerred);
-    sta = (sum(spike_trigerred, 3)/ N);
+    sta = (sum(spike_trigerred, 3)/ N) * 256;
 end
